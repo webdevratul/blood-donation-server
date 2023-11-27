@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require("cors");
 require('dotenv').config();
-
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const port = process.env.PORT || 200;
 
 // middlewares 
@@ -11,13 +11,69 @@ app.use(express.json());
 
 
 
+
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.uxcjhbh.mongodb.net/?retryWrites=true&w=majority`;
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+    serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+    }
+});
+
+async function run() {
+    try {
+
+        const userCollection = client.db("bloodDonationCampaign").collection("user");
+        const districtCollection = client.db("bloodDonationCampaign").collection("district");
+        const upazilaCollection = client.db("bloodDonationCampaign").collection("upazila");
+        const donationRequestCollection = client.db("bloodDonationCampaign").collection("donationRequest");
+
+        app.post("/user", async (req, res) => {
+            const user = req.body;
+            const result = await userCollection.insertOne(user);
+            res.send(result);
+        });
+
+        app.get("/district", async (req, res) => {
+            const result = await districtCollection.find().toArray();
+            res.send(result);
+        });
+
+        app.get("/upazila", async (req, res) => {
+            const result = await upazilaCollection.find().toArray();
+            res.send(result);
+        });
+
+        app.post("/donationRequest", async (req, res) => {
+            const user = req.body;
+            const result = await donationRequestCollection.insertOne(user);
+            res.send(result);
+        });
+
+        // Connect the client to the server	(optional starting in v4.7)
+        // await client.connect();
+        // Send a ping to confirm a successful connection
+        await client.db("admin").command({ ping: 1 });
+        console.log("Connected to MongoDB!");
+    } finally {
+        // Ensures that the client will close when you finish/error
+        // await client.close();
+    }
+}
+run().catch(console.dir);
+
+
+
 app.get('/', (req, res) => {
     res.send('Blood Donation Server is running!')
-})
+});
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`)
-})
+});
 
 
 
