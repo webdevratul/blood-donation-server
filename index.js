@@ -32,6 +32,8 @@ async function run() {
         const donationRequestCollection = client.db("bloodDonationCampaign").collection("donationRequest");
         const blogCollection = client.db("bloodDonationCampaign").collection("blogPost");
 
+
+
         app.post("/user", async (req, res) => {
             const user = req.body;
             const result = await userCollection.insertOne(user);
@@ -55,7 +57,7 @@ async function run() {
             res.send(result);
         });
 
-        app.patch("/users/Volunteer/:id", async (req, res) => {
+        app.patch("/users/Volunteer/:id",  async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const updateDoc = {
@@ -67,7 +69,7 @@ async function run() {
             res.send(result);
         });
 
-        app.patch("/users/blocked/:id", async (req, res) => {
+        app.patch("/users/blocked/:id",  async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const updateDoc = {
@@ -79,7 +81,7 @@ async function run() {
             res.send(result);
         });
 
-        app.patch("/users/unblocked/:id", async (req, res) => {
+        app.patch("/users/unblocked/:id",  async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const updateDoc = {
@@ -103,7 +105,7 @@ async function run() {
             res.send(result);
         });
 
-        app.patch("/donationRequest/Canceled/:id", async (req, res) => {
+        app.patch("/donationRequest/Canceled/:id",  async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const updateDoc = {
@@ -115,7 +117,7 @@ async function run() {
             res.send(result);
         });
 
-        app.patch("/donationRequest/Pending/:id", async (req, res) => {
+        app.patch("/donationRequest/Pending/:id",  async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const updateDoc = {
@@ -127,7 +129,7 @@ async function run() {
             res.send(result);
         });
 
-        app.patch("/donationRequest/Done/:id", async (req, res) => {
+        app.patch("/donationRequest/Done/:id",  async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const updateDoc = {
@@ -141,11 +143,13 @@ async function run() {
 
         app.get("/users/admin/:email", async (req, res) => {
             const email = req.params.email;
+
+
             const query = { email: email };
             const user = await userCollection.findOne(query);
             let admin = false;
             if (user) {
-                admin = user.role === "admin";
+                admin = user?.role === "admin";
             }
             res.send({ admin });
         });
